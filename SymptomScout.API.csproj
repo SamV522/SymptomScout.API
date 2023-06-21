@@ -31,4 +31,19 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Binaries\SymptomScout.Shared.deps.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Binaries\SymptomScout.Shared.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Binaries\SymptomScout.Shared.pdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
