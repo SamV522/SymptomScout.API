@@ -3,11 +3,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SymptomScout.API.Messages.Symptoms
 {
-    public class NewSymptomRequest
+    public class CreateSymptomRequest
     {
         [Required]
         public Symptom Symptom { get; set; }
 
-        public NewSymptomRequest() { }
+        public CreateSymptomRequest() { }
     }
 }

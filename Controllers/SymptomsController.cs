@@ -10,13 +10,13 @@ namespace SymptomScout.API.Controllers
     {
         private readonly SymptomScoutDbContext _context;
 
-        public SymptomsController(SymptomScoutDbContext dbContext)
+        public SymptomsController(SymptomScoutDbContext context)
         {
-            _context = dbContext;
+            _context = context;
         }
 
         [HttpGet()]
-        public IActionResult GetAllSymptoms()
+        public IActionResult GetSymptoms()
         {
             var symptoms = _context.Symptoms;
 
@@ -24,7 +24,7 @@ namespace SymptomScout.API.Controllers
         }
 
         [HttpGet("{id}/")]
-        public IActionResult GetSymptomById(int id)
+        public IActionResult GetSymptom(int id)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -48,7 +48,7 @@ namespace SymptomScout.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateNewSymptom(NewSymptomRequest request)
+        public async Task<IActionResult> CreateSymptomAsync([FromBody] CreateSymptomRequest request)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -63,6 +63,31 @@ namespace SymptomScout.API.Controllers
             } catch (Exception ex)
             {
                 return StatusCode(500, ex.ToString());
+            }
+        }
+
+        [HttpPatch("{id}/")]
+        public async Task<IActionResult> UpdateSymptomAsync(int id, [FromBody] UpdateSymptomRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var symptom = _context.Symptoms.Where(s => s.SymptomId == id).Single();
+
+            if (symptom != null)
+            {
+                symptom.Name = request.Symptom.Name;
+                symptom.Description = request.Symptom.Description;
+                symptom.DiagnosisSymptoms = request.Symptom.DiagnosisSymptoms;
+
+                await _context.SaveChangesAsync();
+
+                return Ok(symptom);
+            } else
+            {
+                return NotFound();
             }
         }
     }
