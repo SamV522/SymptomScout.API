@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SymptomScout.Shared.Models;
+using Microsoft.Extensions.Hosting;
+using SymptomScout.Shared.Domain;
 
 namespace SymptomScout.API.Persistence
 {
@@ -7,7 +8,6 @@ namespace SymptomScout.API.Persistence
     {
         public DbSet<Diagnosis> Diagnoses { get; set; }
         public DbSet<Symptom> Symptoms { get; set; }
-        public DbSet<DiagnosisSymptom> DiagnosisSymptom { get; set; }
 
         public SymptomScoutDbContext(DbContextOptions<SymptomScoutDbContext> options)
             : base(options)

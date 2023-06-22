@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SymptomScout.API.Messages.Symptoms;
+using Microsoft.EntityFrameworkCore;
+using SymptomScout.API.Models.Symptoms;
 using SymptomScout.API.Persistence;
+using SymptomScout.Shared.Domain;
+using SymptomScout.Shared.Models;
 
 namespace SymptomScout.API.Controllers
 {
@@ -19,51 +22,42 @@ namespace SymptomScout.API.Controllers
         public IActionResult GetSymptoms()
         {
             var symptoms = _context.Symptoms;
-
+            
             return Ok(symptoms);
         }
 
         [HttpGet("{id}/")]
         public IActionResult GetSymptom(int id)
         {
-            if (!ModelState.IsValid)
-                return BadRequest();
+            var symptom = _context.Symptoms.Single(s => s.SymptomId == id);
 
-            try
-            {
-                var symptoms = _context.Symptoms.Where(s => s.SymptomId == id);
+            var diagnoses = _context.Diagnoses;
 
-                if (symptoms != null && symptoms.Any())
-                {
-                    return Ok(symptoms.Single());
-                }
-                else
-                {
-                    return NotFound();
-                }
-            } catch (Exception ex)
+            var symptomDto = new SymptomDto
             {
-                return StatusCode(500, ex.ToString());
-            }
+                SymptomId = symptom.SymptomId,
+                Name = symptom.Name,
+                Description = symptom.Description,
+                Diagnoses = diagnoses.Where(d => d.Symptoms.Select(ds => ds.SymptomId).Single() == symptom.SymptomId).Include(d => d.Symptoms).ToList()
+            };
+
+            return Ok(symptomDto);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateSymptomAsync([FromBody] CreateSymptomRequest request)
         {
-            if (!ModelState.IsValid)
-                return BadRequest();
-
-            try
+            var symptom = new Symptom
             {
-                _context.Symptoms.Add(request.Symptom);
+                Name = request.Name,
+                Description = request.Description
+            };
 
-                await _context.SaveChangesAsync();
+            _context.Symptoms.Add(symptom);
 
-                return Ok();
-            } catch (Exception ex)
-            {
-                return StatusCode(500, ex.ToString());
-            }
+            await _context.SaveChangesAsync();
+
+            return Ok();
         }
 
         [HttpPatch("{id}/")]
@@ -78,9 +72,8 @@ namespace SymptomScout.API.Controllers
 
             if (symptom != null)
             {
-                symptom.Name = request.Symptom.Name;
-                symptom.Description = request.Symptom.Description;
-                symptom.DiagnosisSymptoms = request.Symptom.DiagnosisSymptoms;
+                symptom.Name = request.Name ?? symptom.Name;
+                symptom.Description = request.Description ?? symptom.Description;
 
                 await _context.SaveChangesAsync();
 

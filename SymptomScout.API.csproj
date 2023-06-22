@@ -22,28 +22,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Binaries\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="SymptomScout.Shared">
-      <HintPath>..\SymptomScout.Shared\bin\Debug\net6.0\SymptomScout.Shared.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="Binaries\SymptomScout.Shared.deps.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Binaries\SymptomScout.Shared.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Binaries\SymptomScout.Shared.pdb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <ProjectReference Include="..\SymptomScout.Shared\SymptomScout.Shared.csproj" />
   </ItemGroup>
 
 </Project>

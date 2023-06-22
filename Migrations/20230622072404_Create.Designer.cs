@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SymptomScout.API.Persistence;
 
@@ -11,9 +12,11 @@ using SymptomScout.API.Persistence;
 namespace SymptomScout.API.Migrations
 {
     [DbContext(typeof(SymptomScoutDbContext))]
-    partial class SymptomScoutDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230622072404_Create")]
+    partial class Create
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

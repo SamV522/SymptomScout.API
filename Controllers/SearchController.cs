@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 using SymptomScout.API.Persistence;
+using SymptomScout.Shared.Domain;
 using System.ComponentModel.DataAnnotations;
 
 namespace SymptomScout.API.Controllers
@@ -41,6 +44,22 @@ namespace SymptomScout.API.Controllers
                 return Ok(diagnosis);
             else
                 return NotFound();
+        }
+
+        [HttpGet("symptoms/match")]
+        public IActionResult DiagnosisSymptomSearch([FromBody] List<int> symptomIds)
+        {
+            // Validate all symptoms
+            var symptoms = _context.Symptoms.Where(s => symptomIds.Contains(s.SymptomId));
+
+            var diagnoses = _context.Diagnoses.AsQueryable();
+
+            foreach(var symptomId in symptomIds)
+            {
+                diagnoses = diagnoses.Where(d => d.Symptoms.Select(ds => ds.SymptomId).Contains(symptomId));
+            }
+
+            return Ok(diagnoses.Include(d => d.Symptoms));
         }
     }
 }
