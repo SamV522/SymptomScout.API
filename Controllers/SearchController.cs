@@ -21,9 +21,6 @@ namespace SymptomScout.API.Controllers
         [HttpGet("symptoms/{search}")]
         public IActionResult SymptomSearch([MinLength(3)] string search)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             var symptom = _context.Symptoms.Where(s => s.Name.Substring(0,search.Length) == search);
 
             if (symptom.Any())
@@ -46,7 +43,7 @@ namespace SymptomScout.API.Controllers
                 return NotFound();
         }
 
-        [HttpGet("symptoms/match")]
+        [HttpPost("symptoms/match")]
         public IActionResult DiagnosisSymptomSearch([FromBody] List<int> symptomIds)
         {
             // Validate all symptoms
