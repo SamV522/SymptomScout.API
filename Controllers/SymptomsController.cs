@@ -26,22 +26,12 @@ namespace SymptomScout.API.Controllers
             return Ok(symptoms);
         }
 
-        [HttpGet("{id}/")]
+        [HttpGet("{id}")]
         public IActionResult GetSymptom(int id)
         {
-            var symptom = _context.Symptoms.Single(s => s.SymptomId == id);
+            var symptom = _context.Symptoms.Include(s => s.Diagnoses).Single(s => s.SymptomId == id);
 
-            var diagnoses = _context.Diagnoses;
-
-            var symptomDto = new SymptomDto
-            {
-                SymptomId = symptom.SymptomId,
-                Name = symptom.Name,
-                Description = symptom.Description,
-                Diagnoses = diagnoses.Where(d => d.Symptoms.Select(ds => ds.SymptomId).Single() == symptom.SymptomId).Include(d => d.Symptoms).ToList()
-            };
-
-            return Ok(symptomDto);
+            return Ok(new SymptomDto(symptom));
         }
 
         [HttpPost]

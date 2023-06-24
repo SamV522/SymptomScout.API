@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using SymptomScout.API.Persistence;
 using SymptomScout.Shared.Domain;
+using SymptomScout.Shared.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace SymptomScout.API.Controllers
@@ -56,7 +57,7 @@ namespace SymptomScout.API.Controllers
                 diagnoses = diagnoses.Where(d => d.Symptoms.Select(ds => ds.SymptomId).Contains(symptomId));
             }
 
-            return Ok(diagnoses.Include(d => d.Symptoms));
+            return Ok(diagnoses.Include(d => d.Symptoms).Select(d => (DiagnosisDto) d));
         }
     }
 }

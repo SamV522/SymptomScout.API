@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SymptomScout.API.Models.Diagnoses;
 using SymptomScout.API.Persistence;
 using SymptomScout.Shared.Domain;
+using SymptomScout.Shared.Models;
 using System.Collections.Generic;
 
 namespace SymptomScout.API.Controllers
@@ -23,15 +24,15 @@ namespace SymptomScout.API.Controllers
         {
             var diagnoses = _context.Diagnoses;
 
-            return Ok(diagnoses.Include(d => d.Symptoms));
+            return Ok(diagnoses.Include(d => d.Symptoms).Select(d => new DiagnosisDto(d)));
         }
 
-        [HttpGet("{id}/")]
+        [HttpGet("{id}")]
         public IActionResult GetDiagnosis(int id)
         {
-            var diagnosis = _context.Diagnoses.Single(d => d.DiagnosisId == id);
+            var diagnosis = _context.Diagnoses.Include(d => d.Symptoms).Single(d => d.DiagnosisId == id);
 
-            return Ok(diagnosis);
+            return Ok(new DiagnosisDto(diagnosis));
         }
 
         [HttpPost()]
