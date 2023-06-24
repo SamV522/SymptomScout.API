@@ -6,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -24,6 +25,15 @@ else
 builder.Services.AddDbContext<SymptomScoutDbContext>(options =>
     options.UseSqlServer(connection));
 
+builder.Services.AddCors(
+    options => options.AddPolicy("Default", builder =>
+        builder.WithOrigins("https://localhost:4200", "https://symptomscout-app.azurewebsites.net/", "https://symptomscout.com/")
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials()
+                )
+    );
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -35,10 +45,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthorization();
 
-app.UseCors(x => x
-    .AllowAnyOrigin()
-    .AllowAnyMethod()
-    .AllowAnyHeader());
+app.UseCors("Default");
 
 app.UseHttpsRedirection();
 
