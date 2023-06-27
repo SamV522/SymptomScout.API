@@ -27,7 +27,7 @@ builder.Services.AddDbContext<SymptomScoutDbContext>(options =>
 
 builder.Services.AddCors(
     options => options.AddPolicy("Default", builder =>
-        builder.WithOrigins("https://localhost:4200", "https://symptomscout-app.azurewebsites.net/", "https://symptomscout.com/")
+        builder.WithOrigins("http://localhost:4200", "https://symptomscout-app.azurewebsites.net/", "https://symptomscout.com/")
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials()
