@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Net.Http.Headers;
 using SymptomScout.API.Persistence;
+using System.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,7 +30,7 @@ builder.Services.AddDbContext<SymptomScoutDbContext>(options =>
 
 builder.Services.AddCors(
     options => options.AddPolicy("Default", builder =>
-        builder.WithOrigins("https://localhost:4200", "https://symptomscout-app.azurewebsites.net/", "https://symptomscout.com/")
+        builder.WithOrigins("http://localhost:4200", "https://symptomscout-app.azurewebsites.net", "https://www.symptomscout.com")
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials()
@@ -41,11 +44,29 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}else
+{
 }
 
-app.UseAuthorization();
+app.UseExceptionHandler(error =>
+{
+    error.Run(async context =>
+    {
+        context.Response.Headers.Add(HeaderNames.AccessControlAllowOrigin, "*");
+
+        await context.Response.WriteAsync("An exception was thrown.");
+
+        var exceptionHandlerPathFeature =
+            context.Features.Get<IExceptionHandlerPathFeature>();
+
+        if (exceptionHandlerPathFeature != null)
+            await context.Response.WriteAsync(exceptionHandlerPathFeature.Error.ToString());
+    });
+});
 
 app.UseCors("Default");
+
+app.UseAuthorization();
 
 app.UseHttpsRedirection();
 
