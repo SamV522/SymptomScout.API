@@ -31,7 +31,7 @@ namespace SymptomScout.API.Controllers
         {
             var symptom = _context.Symptoms.Include(s => s.Diagnoses).Single(s => s.SymptomId == id);
 
-            return Ok(new SymptomDto(symptom));
+            return Ok(new SymptomDto(symptom, symptom.Diagnoses));
         }
 
         [HttpPost]
@@ -44,6 +44,26 @@ namespace SymptomScout.API.Controllers
             };
 
             _context.Symptoms.Add(symptom);
+
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        [HttpPost("bulk")]
+        public async Task<IActionResult> CreateSymptomAsync([FromBody] CreateSymptomRequest[] requests)
+        {
+            foreach(var request in requests)
+            {
+                var symptom = new Symptom
+                {
+                    Name = request.Name,
+                    Description = request.Description,
+                    Diagnoses = new List<Diagnosis>()
+                };
+
+                _context.Symptoms.Add(symptom);
+            }
 
             await _context.SaveChangesAsync();
 

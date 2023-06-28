@@ -4,7 +4,6 @@ using SymptomScout.API.Models.Diagnoses;
 using SymptomScout.API.Persistence;
 using SymptomScout.Shared.Domain;
 using SymptomScout.Shared.Models;
-using System.Collections.Generic;
 
 namespace SymptomScout.API.Controllers
 {
@@ -36,20 +35,79 @@ namespace SymptomScout.API.Controllers
         }
 
         [HttpPost()]
-        public async Task<IActionResult> CreateNewDiagnosis(CreateDiagnosisRequest request)
+        public async Task<IActionResult> CreateNewDiagnosis([FromBody] CreateDiagnosisRequest request)
         {
             var diagnosis = new Diagnosis
             {
                 Name = request.Name,
                 Description = request.Description,
-                Symptoms = request.Symptoms
+                Symptoms = new List<Symptom>()
             };
 
-            _context.Diagnoses.Add(diagnosis);
+            foreach (var symptomDto in request.Symptoms)
+            {
+                var symptom = await _context.Symptoms.FirstOrDefaultAsync(s => s.Name == symptomDto.Name);
 
+                if (symptom == null)
+                {
+                    symptom = new Symptom
+                    {
+                        Name = symptomDto.Name,
+                        Description = symptomDto.Description
+                    };
+
+                    _context.Symptoms.Add(symptom);
+                }
+
+                diagnosis.Symptoms.Add(symptom);
+            }
+
+            _context.Diagnoses.Add(diagnosis);
             await _context.SaveChangesAsync();
 
-            return Ok();
+            return Ok((DiagnosisDto) diagnosis);
+        }
+
+        [HttpPost("bulk")]
+        public async Task<IActionResult> CreateNewDiagnoses([FromBody] CreateDiagnosisRequest[] requests)
+        {
+            var createdDiagnoses = new List<DiagnosisDto>(); // Create a list to hold the newly created diagnoses
+
+            foreach (var request in requests)
+            {
+                var diagnosis = new Diagnosis
+                {
+                    Name = request.Name,
+                    Description = request.Description,
+                    Symptoms = new List<Symptom>()
+                };
+
+                // Retrieve existing symptoms from the database or create new instances
+                foreach (var symptomDto in request.Symptoms)
+                {
+                    var symptom = await _context.Symptoms.FirstOrDefaultAsync(s => s.Name == symptomDto.Name);
+
+                    if (symptom == null)
+                    {
+                        symptom = new Symptom
+                        {
+                            Name = symptomDto.Name,
+                            Description = symptomDto.Description
+                        };
+
+                        _context.Symptoms.Add(symptom);
+                    }
+
+                    diagnosis.Symptoms.Add(symptom);
+                };
+
+                _context.Diagnoses.Add(diagnosis);
+                await _context.SaveChangesAsync();
+
+                createdDiagnoses.Add(diagnosis); // Add the newly created diagnosis to the list
+            }
+
+            return Ok(createdDiagnoses); // Return the list of newly created diagnoses in the response
         }
 
         [HttpPatch("{id}/")]
