@@ -51,8 +51,10 @@ namespace SymptomScout.API.Controllers
         }
 
         [HttpPost("bulk")]
-        public async Task<IActionResult> CreateSymptomAsync([FromBody] CreateSymptomRequest[] requests)
+        public async Task<IActionResult> CreateSymptomsAsync([FromBody] CreateSymptomRequest[] requests)
         {
+            var createdSymptoms = new List<SymptomDto>();
+
             foreach(var request in requests)
             {
                 var symptom = new Symptom
@@ -63,11 +65,12 @@ namespace SymptomScout.API.Controllers
                 };
 
                 _context.Symptoms.Add(symptom);
+                createdSymptoms.Add(symptom);
             }
 
             await _context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(createdSymptoms);
         }
 
         [HttpPatch("{id}/")]
