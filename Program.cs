@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Net.Http.Headers;
 using SymptomScout.API.Persistence;
-using System.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using SymptomScout.API.Persistence;
-using SymptomScout.Shared.Domain;
 using SymptomScout.Shared.Models;
 using System.ComponentModel.DataAnnotations;
 
